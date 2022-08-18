@@ -13,6 +13,8 @@ from stable_baselines3.common.atari_wrappers import (ClipRewardEnv,
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import (DummyVecEnv, SubprocVecEnv,
                                               VecEnvWrapper)
+
+import mtxenv
 from stable_baselines3.common.vec_env.vec_normalize import \
     VecNormalize as VecNormalize_
 
@@ -64,11 +66,11 @@ def make_env(env_id, seed, rank, log_dir, allow_early_resets):
                     env = FireResetEnv(env)
                 env = WarpFrame(env, width=84, height=84)
                 env = ClipRewardEnv(env)
-        elif len(env.observation_space.shape) == 3:
-            raise NotImplementedError(
-                "CNN models work only for atari,\n"
-                "please use a custom wrapper for a custom pixel input env.\n"
-                "See wrap_deepmind for an example.")
+        # elif len(env.observation_space.shape) == 3:
+        #     raise NotImplementedError(
+        #         "CNN models work only for atari,\n"
+        #         "please use a custom wrapper for a custom pixel input env.\n"
+        #         "See wrap_deepmind for an example.")
 
         # If the input has shape (W,H,3), wrap for PyTorch convolutions
         obs_shape = env.observation_space.shape
@@ -93,23 +95,24 @@ def make_vec_envs(env_name,
         for i in range(num_processes)
     ]
 
-    if len(envs) > 1:
-        envs = SubprocVecEnv(envs)
-    else:
-        envs = DummyVecEnv(envs)
+    # if len(envs) > 1:
+    #     envs = SubprocVecEnv(envs)
+    # else:
+    #     pass
+        # envs = DummyVecEnv(envs)
 
-    if len(envs.observation_space.shape) == 1:
-        if gamma is None:
-            envs = VecNormalize(envs, norm_reward=False)
-        else:
-            envs = VecNormalize(envs, gamma=gamma)
+    # if len(envs.observation_space.shape) == 1:
+    #     if gamma is None:
+    #         envs = VecNormalize(envs, norm_reward=False)
+    #     else:
+    #         envs = VecNormalize(envs, gamma=gamma)
 
-    envs = VecPyTorch(envs, device)
+    # envs = VecPyTorch(envs, device)
 
-    if num_frame_stack is not None:
-        envs = VecPyTorchFrameStack(envs, num_frame_stack, device)
-    elif len(envs.observation_space.shape) == 3:
-        envs = VecPyTorchFrameStack(envs, 4, device)
+    # if num_frame_stack is not None:
+    #     envs = VecPyTorchFrameStack(envs, num_frame_stack, device)
+    # elif len(envs.observation_space.shape) == 3:
+    #     envs = VecPyTorchFrameStack(envs, 4, device)
 
     return envs
 

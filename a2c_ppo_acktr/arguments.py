@@ -75,7 +75,7 @@ def get_args():
     parser.add_argument(
         '--num-processes',
         type=int,
-        default=16,
+        default=1,
         help='how many training CPU processes to use (default: 16)')
     parser.add_argument(
         '--num-steps',
@@ -119,7 +119,7 @@ def get_args():
         help='number of environment steps to train (default: 10e6)')
     parser.add_argument(
         '--env-name',
-        default='PongNoFrameskip-v4',
+        default='mtxenv/GridWorld-v0',
         help='environment to train on (default: PongNoFrameskip-v4)')
     parser.add_argument(
         '--log-dir',
