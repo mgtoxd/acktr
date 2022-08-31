@@ -1,0 +1,120 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+option go_package = "cache/net/prot";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.routeguide";
+option java_outer_classname = "RouteGuideProto";
+
+package prot;
+
+
+service ACKTR{
+  rpc GetDem(stream DemandInfoList) returns (Hash){}
+}
+
+
+service Cache {
+  //  获取文件
+  rpc GetFile(Hash) returns (File) {}
+
+  // 发现缓存节点
+  rpc ValidationCacheNode(ShakeHands) returns (ShakeHands){}
+
+  // 缓存节点文件变动
+  rpc ProxyChange(ChangesStorage) returns (ChangesStorage);
+
+  // 需求共享
+  rpc GetDemand(stream Demand) returns (Demand);
+
+  // 计算延迟变动
+  rpc CalDelayChange(ChangesDelay) returns (ChangesDelay);
+
+}
+service Cloud {
+  //  rpc GetFileList(Point) returns (Feature) {}
+
+  //  获取文件
+  rpc GetFile(Hash) returns (File) {}
+  //  获取文件列表
+  rpc GetFileList(File) returns (stream FileInfo) {}
+
+  rpc GetCalSpeed(File) returns (Speed){}
+
+  rpc FeedbackDelay(DelayInfo) returns (File);
+
+
+  // A client-to-server streaming RPC.
+  //
+  // Accepts a stream of Points on a route being traversed, returning a
+  // RouteSummary when traversal is completed.
+  //  rpc RecordRoute(stream Point) returns (RouteSummary) {}
+  // A Bidirectional streaming RPC.
+  //
+  // Accepts a stream of RouteNotes sent while a route is being traversed,
+  // while receiving other RouteNotes (e.g. from other users).
+  //  rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
+}
+message File{
+  bytes byte_list = 1;    // file data
+  string mime_type = 2; // file Type
+  string name = 3;      // file name
+}
+message Hash{
+  int64 hash = 1;
+}
+message FileInfo{
+  int64 hash = 1;
+  double size = 2;
+  string name = 3;
+}
+message Speed{
+  double speed = 1;
+}
+message DelayInfo{
+  int64 delay = 1;
+  int64 net_delay = 3;
+  int64 hash = 2;
+}
+// flag = 0 未准备好 没用到
+// flag = 1 准备好
+message ShakeHands{
+  bool flag = 1;
+}
+
+// flag = true 获取
+// flag = false 删除
+message ChangesStorage{
+  int64 hash = 1;
+  bool flag = 2;
+  double size = 3;
+}
+message ChangesDelay{
+  double delay = 1;
+  int64 time_stamp = 2;
+}
+message Demand{
+  int64 hash = 1;
+  int64 delay = 2;
+  int64 count = 3;
+}
+
+message DemandInfoList{
+  string addr = 1;
+  repeated Demand info = 2;
+  double net_delay = 3;
+  double cal_delay = 4;
+}
