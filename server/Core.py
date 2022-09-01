@@ -78,7 +78,6 @@ class CoreChoose(BaseChoose):
 
         # Obser reward and next obs
 
-
         # if 'episode' in infos.keys():
         #     episode_rewards.append(infos['episode']['r'])
 
@@ -90,7 +89,9 @@ class CoreChoose(BaseChoose):
         self.rollouts.insert(obs, recurrent_hidden_states, action,
                              action_log_prob, value, reward, masks, bad_masks)
         self.step += 1
+        print("in5")
         if self.step % 5 == 0:
+            self.step = 0
             with torch.no_grad():
                 next_value = self.actor_critic.get_value(
                     self.rollouts.obs[-1], self.rollouts.recurrent_hidden_states[-1],
@@ -102,16 +103,16 @@ class CoreChoose(BaseChoose):
             value_loss, action_loss, dist_entropy = self.agent.update(self.rollouts)
             self.rollouts.after_update()
 
-        if self.step % 500 == 0:
-            save_path = os.path.join(self.args.save_dir, self.args.algo)
-            try:
-                os.makedirs(save_path)
-            except OSError:
-                pass
-
-            torch.save([
-                self.actor_critic,
-                getattr(utils.get_vec_normalize(self.envs), 'obs_rms', None)
-            ], os.path.join(save_path, self.args.env_name + ".pt"))
-
-        return self.hash2idx[action]
+        # if self.step % 500 == 0:
+        #     save_path = os.path.join(self.args.save_dir, self.args.algo)
+        #     try:
+        #         os.makedirs(save_path)
+        #     except OSError:
+        #         pass
+        #
+        #     torch.save([
+        #         self.actor_critic,
+        #         getattr(utils.get_vec_normalize(self.envs), 'obs_rms', None)
+        #     ], os.path.join(save_path, self.args.env_name + ".pt"))
+        print(action[0][0].item())
+        return self.hash2idx[action[0][0].item()]

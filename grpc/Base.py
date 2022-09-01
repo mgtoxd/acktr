@@ -21,7 +21,6 @@ class BaseChoose:
         self.delayMap = {}
 
     def getHighest(self):
-
         maxKey = -1
         maxV = 0
         for key, value in self.delayMap.items():
