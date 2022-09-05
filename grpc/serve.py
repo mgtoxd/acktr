@@ -42,7 +42,7 @@ def serve(i, b: BaseChoose):
 
 if __name__ == '__main__':
     sizeMap = {}
-    channel = grpc.insecure_channel('localhost:8888')
+    channel = grpc.insecure_channel('192.168.201.241:8888')
     stub = landlord2Cloud_pb2_grpc.CloudStub(channel)
     rs = stub.GetFileList(landlord2Cloud_pb2.File())
     for i in rs:
